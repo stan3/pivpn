@@ -1165,7 +1165,7 @@ installPiVPN() {
     setCustomProto
     setCustomPort
     confOpenVPN
-    confNetwork
+    # confNetwork
     confOVPN
     setClientDNS
     confLogging
