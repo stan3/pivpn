@@ -27,7 +27,7 @@ PKG_COUNT="${PKG_MANAGER} -s -o Debug::NoLocking=true upgrade | grep -c ^Inst ||
 PIVPN_DEPS=( openvpn git tar wget grep dnsutils expect whiptail net-tools)
 ###          ###
 
-pivpnGitUrl="https://github.com/pivpn/pivpn.git"
+pivpnGitUrl="https://github.com/stan3/pivpn.git"
 pivpnFilesDir="/etc/.pivpn"
 easyrsaVer="3.0.1-pivpn1"
 easyrsaRel="https://github.com/pivpn/easy-rsa/releases/download/${easyrsaVer}/EasyRSA-${easyrsaVer}.tgz"
