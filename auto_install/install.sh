@@ -24,7 +24,7 @@ PKG_CACHE="/var/lib/apt/lists/"
 UPDATE_PKG_CACHE="${PKG_MANAGER} update"
 PKG_INSTALL="${PKG_MANAGER} --yes --no-install-recommends install"
 PKG_COUNT="${PKG_MANAGER} -s -o Debug::NoLocking=true upgrade | grep -c ^Inst || true"
-PIVPN_DEPS=( openvpn git dhcpcd5 tar wget grep iptables-persistent dnsutils expect whiptail net-tools)
+PIVPN_DEPS=( openvpn git tar wget grep dnsutils expect whiptail net-tools)
 ###          ###
 
 pivpnGitUrl="https://github.com/pivpn/pivpn.git"
