@@ -1,14 +1,21 @@
 #!/bin/bash
 # Create OVPN Client
 # Default Variable Declarations
-DEFAULT="Default.txt"
+
 FILEEXT=".ovpn"
 CRT=".crt"
 KEY=".key"
 CA="ca.crt"
 TA="ta.key"
-INDEX="/etc/openvpn/easy-rsa/pki/index.txt"
-INSTALL_USER=$(cat /etc/pivpn/INSTALL_USER)
+PIVPN_DIR="$PWD"
+DEFAULT="$PIVPN_DIR"/Default.txt
+EASY_RSA_DIR="$PIVPN_DIR/easyrsa"
+export EASYRSA="$EASY_RSA_DIR"
+INDEX="$EASY_RSA_DIR/pki/index.txt"
+# INSTALL_USER=$(cat /etc/pivpn/INSTALL_USER)
+
+. "$(dirname "$0")"/lib.sh
+set -eu
 
 helpFunc() {
     echo "::: Create a client ovpn profile, optional nopass"
@@ -151,6 +158,7 @@ if [[ -z "${NAME}" ]]; then
     exit 1
 fi
 
+INUSE=0
 # Check if name is already in use
 while read -r line || [ -n "${line}" ]; do
     STATUS=$(echo "$line" | awk '{print $1}')
@@ -176,8 +184,9 @@ if [ "${NAME}" == "ta" ] || [ "${NAME}" == "server" ] || [ "${NAME}" == "ca" ]; 
     exit 1
 fi
 
-cd /etc/openvpn/easy-rsa || exit
+cd $EASY_RSA_DIR || exit
 
+PASSWD=""
 if [[ "${NO_PASS}" =~ "1" ]]; then
     if [[ -n "${PASSWD}" ]]; then
         echo "Both nopass and password arguments passed to the script. Please use either one."
@@ -217,47 +226,25 @@ if [ ! -f "${TA}" ]; then
 fi
 echo "tls-auth Private Key found: $TA"
 
+
+
 #Ready to make a new .ovpn file
 {
     # Start by populating with the default file
     cat "${DEFAULT}"
 
-    #Now, append the CA Public Cert
-    echo "<ca>"
-    cat "${CA}"
-    echo "</ca>"
-
-    #Next append the client Public Cert
-    echo "<cert>"
-    sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' < "issued/${NAME}${CRT}"
-    echo "</cert>"
-
-    #Then, append the client Private Key
-    echo "<key>"
-    cat "private/${NAME}${KEY}"
-    echo "</key>"
-
-  	#Finally, append the TA Private Key
-  	if [ -f /etc/pivpn/TWO_POINT_FOUR ]; then
-    		echo "<tls-crypt>"
-    		cat "${TA}"
-    		echo "</tls-crypt>"
-  	else
-    		echo "<tls-auth>"
-    		cat "${TA}"
-    		echo "</tls-auth>"
-  	fi
+    catOVPNInline "$EASY_RSA_DIR" "$PIVPN_DIR" "$NAME" ""
 
 } > "${NAME}${FILEEXT}"
 
 # Copy the .ovpn profile to the home directory for convenient remote access
-cp "/etc/openvpn/easy-rsa/pki/$NAME$FILEEXT" "/home/$INSTALL_USER/ovpns/$NAME$FILEEXT"
-chown "$INSTALL_USER" "/home/$INSTALL_USER/ovpns/$NAME$FILEEXT"
+# cp "/etc/openvpn/easy-rsa/pki/$NAME$FILEEXT" "/home/$INSTALL_USER/ovpns/$NAME$FILEEXT"
+# chown "$INSTALL_USER" "/home/$INSTALL_USER/ovpns/$NAME$FILEEXT"
 printf "\n\n"
 printf "========================================================\n"
 printf "\e[1mDone! %s successfully created!\e[0m \n" "$NAME$FILEEXT"
 printf "%s was copied to:\n" "$NAME$FILEEXT"
-printf "  /home/%s/ovpns\n" "$INSTALL_USER"
+# printf "  /home/%s/ovpns\n" "$INSTALL_USER"
 printf "for easy transfer. Please use this profile only on one\n"
 printf "device and create additional profiles for other devices.\n"
 printf "========================================================\n\n"
