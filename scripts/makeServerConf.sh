@@ -73,8 +73,8 @@ setCustomPort() {
 
 
 confOpenVPN() {
-    local easyrsa_dir="$(realpath "$1")"
-    local pivpn_dir="$(realpath "$2")"
+    local easyrsa_dir="$1"
+    local pivpn_dir="$2"
     local source_dir="$3"
 
     setCustomProto "$pivpn_dir"
@@ -185,7 +185,6 @@ EOF
     # cp pki/crl.pem "$openvpn_dir"/crl.pem
     # ${SUDOE} chown nobody:nogroup /etc/openvpn/crl.pem
 
-    pwd
     # Write config file for server using the template .txt file
     cp "$source_dir"/server_config.txt "$pivpn_dir"/server.conf
 
@@ -290,10 +289,11 @@ confOVPN() {
 
 
 pivpn_dir="$(realpath "$1")"
-easyrsa_dir="$1"/easyrsa
+easyrsa_dir="$pivpn_dir"/easyrsa
+source_dir="$(realpath "$(dirname "$0")"/..)"
 
 mkdir "$pivpn_dir"
-confOpenVPN "$easyrsa_dir" "$pivpn_dir" "$(dirname "$0")"/..
-confOVPN "$(dirname "$0")"/.. "$pivpn_dir"
+confOpenVPN "$easyrsa_dir" "$pivpn_dir" "$source_dir"
+confOVPN "$source_dir" "$pivpn_dir"
 
 
