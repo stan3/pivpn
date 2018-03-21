@@ -1,24 +1,22 @@
+# Generated for use by PiVPN.io
 dev tun
 proto udp
 port 1194
-ca /etc/openvpn/easy-rsa/pki/ca.crt
-cert /etc/openvpn/easy-rsa/pki/issued/server.crt
-key /etc/openvpn/easy-rsa/pki/private/server.key
-dh /etc/openvpn/easy-rsa/pki/dh2048.pem
-topology subnet
+# prefer default mode
+# topology subnet
 server 10.8.0.0 255.255.255.0
 # Set your primary domain name server address for clients
-push "dhcp-option DNS 8.8.8.8"
-push "dhcp-option DNS 8.8.4.4"
+# push "dhcp-option DNS 8.8.8.8"
+# push "dhcp-option DNS 8.8.4.4"
 # Override the Client default gateway by using 0.0.0.0/1 and
 # 128.0.0.0/1 rather than 0.0.0.0/0. This has the benefit of
 # overriding but not wiping out the original default gateway.
-push "redirect-gateway def1"
-client-to-client
+# push "redirect-gateway def1"
+# only need to see the server
+# client-to-client
 keepalive 10 120
 remote-cert-tls client
 tls-version-min 1.2
-tls-auth /etc/openvpn/easy-rsa/pki/ta.key 0
 cipher AES-256-CBC
 auth SHA256
 comp-lzo
@@ -31,4 +29,4 @@ status /var/log/openvpn-status.log 20
 status-version 3
 syslog
 verb 3
-# Generated for use by PiVPN.io
+key-direction 0
